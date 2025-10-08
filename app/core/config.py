@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8001
     debug: bool = True
+    db_url: str = ""
 
     # Directorios
     upload_dir: Path = Path("uploads")

@@ -5,7 +5,7 @@ import cv2
 from typing import Dict
 import time
 
-from app.config import settings
+from app.core.config import settings
 from app.models import VehicleDetection, BoundingBox
 
 

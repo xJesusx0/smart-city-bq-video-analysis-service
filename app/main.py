@@ -1,12 +1,15 @@
+from app.core.models.camera_api_key import CameraApiKeyBase
 from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi import Depends
 from datetime import datetime
 import uvicorn
 
-from app.config import settings
+from app.core.config import settings
 from app.models import AnalysisResponse, HealthResponse, ErrorResponse
 from app.detector import VehicleDetector
+from app.core.dependencies import ValidKeyDep
 
 # Crear la aplicación FastAPI
 app = FastAPI(
@@ -75,6 +78,7 @@ async def get_model_info():
 
 @app.post("/analyze", response_model=AnalysisResponse, tags=["Analysis"])
 async def analyze_image(
+    current_camera: ValidKeyDep,
     file: UploadFile = File(..., description="Imagen a analizar"),
     location_id: str = Form(default="default", description="ID de ubicación"),
 ):
