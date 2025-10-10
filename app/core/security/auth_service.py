@@ -1,13 +1,21 @@
+from app.core.repositories.camera_api_key_repository import CameraApiKeyRepository
+from app.core.exceptions import get_entity_not_found_exception
+from app.models import CameraAndLocation
+from app.core.dependencies import LocationRepository
 from datetime import datetime
 from app.core.exceptions import get_credentials_exception
-from app.core.models.camera_api_key import CameraApiKeyBase
 
 
 class AuthService:
-    def __init__(self, camera_api_key_repository):
+    def __init__(
+        self,
+        camera_api_key_repository: CameraApiKeyRepository,
+        location_repository: LocationRepository,
+    ):
         self.camera_api_key_repository = camera_api_key_repository
+        self.location_repository = location_repository
 
-    def validate_key(self, api_key: str) -> CameraApiKeyBase:
+    def validate_key(self, api_key: str) -> CameraAndLocation:
         """
         Valida la existencia y vigencia de una API key de cámara.
         Retorna el registro de CameraApiKey si es válida.
@@ -26,4 +34,12 @@ class AuthService:
         # camera_api_key.last_used_at = datetime.utcnow()
         # self.camera_api_key_repository.update(camera_api_key)
 
-        return camera_api_key
+        # Obtener la ubicación asociada
+        location = self.location_repository.get_by_id(camera_api_key.location_id)
+        if not location:
+            raise get_entity_not_found_exception("Ubicación asociada no encontrada")
+
+        camera_and_location = CameraAndLocation(
+            camera=camera_api_key, location=location
+        )
+        return camera_and_location

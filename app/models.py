@@ -1,3 +1,5 @@
+from app.core.models.location import LocationBase
+from app.core.models.camera_api_key import CameraApiKeyBase
 from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
@@ -35,7 +37,7 @@ class AnalysisResponse(BaseModel):
     timestamp: datetime = Field(
         default_factory=datetime.now, description="Fecha/hora del análisis"
     )
-    location_id: str = Field(..., description="ID de la ubicación")
+    location_id: int = Field(..., description="ID de la ubicación")
     image_path: str = Field(..., description="Ruta donde se guardó la imagen")
     vehicle_count: int = Field(
         ..., ge=0, description="Cantidad total de vehículos detectados"
@@ -46,6 +48,9 @@ class AnalysisResponse(BaseModel):
     processing_time: float = Field(
         ..., description="Tiempo de procesamiento en segundos"
     )
+    longitude: Optional[float] = Field(..., description="Longitud de la ubicación")
+    latitude: Optional[float] = Field(..., description="Latitud de la ubicación")
+    location_name: Optional[str] = Field(..., description="Nombre de la ubicación")
 
 
 class HealthResponse(BaseModel):
@@ -63,3 +68,10 @@ class ErrorResponse(BaseModel):
     success: bool = False
     error: str
     detail: Optional[str] = None
+
+
+class CameraAndLocation(BaseModel):
+    """Modelo combinado de cámara y ubicación"""
+
+    camera: CameraApiKeyBase = None
+    location: LocationBase = None

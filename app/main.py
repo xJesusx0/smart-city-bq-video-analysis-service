@@ -76,15 +76,13 @@ async def get_model_info():
 
 @app.post("/analyze", response_model=AnalysisResponse, tags=["Analysis"])
 async def analyze_image(
-    current_camera: ValidKeyDep,
+    camera_and_location: ValidKeyDep,
     file: UploadFile = File(..., description="Imagen a analizar"),
-    location_id: str = Form(default="default", description="ID de ubicación"),
 ):
     """
     Analiza una imagen y detecta vehículos
 
     - **file**: Archivo de imagen (JPG, PNG)
-    - **location_id**: Identificador de la ubicación/cámara
     """
 
     if detector is None:
@@ -116,11 +114,14 @@ async def analyze_image(
 
         return AnalysisResponse(
             success=True,
-            location_id=location_id,
+            location_id=camera_and_location.camera.location_id,
             image_path=str(file_path),
             vehicle_count=result["vehicle_count"],
             detections=result["detections"],
             processing_time=processing_time,
+            longitude=camera_and_location.location.longitude or 0.0,
+            latitude=camera_and_location.location.latitude or 0.0,
+            location_name=camera_and_location.location.name,
         )
 
     except Exception as e:
