@@ -22,8 +22,8 @@ class Settings(BaseSettings):
     confidence_threshold: float = 0.5  # Confianza mínima para detección
 
     # Clases de vehículos del dataset COCO
-    # 2: car, 3: motorcycle, 5: bus, 7: truck
-    vehicle_classes: list[int] = [2, 3, 5, 7]
+    # 0: person, 1: bicycle, 2: car, 3: motorcycle, 5: bus, 7: truck
+    vehicle_classes: list[int] = [0, 1, 2, 3, 5, 7]
 
     # Configuración de procesamiento
     max_image_size: int = 1280  # Redimensionar imágenes grandes

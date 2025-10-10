@@ -17,9 +17,14 @@ class VehicleDetector:
         self.model = None
         self.model_path = settings.models_dir / settings.yolo_model
 
-        # ✅ Definir PRIMERO class_names
-        self.class_names = {2: "car", 3: "motorcycle", 5: "bus", 7: "truck"}
-
+        self.class_names = {
+            0: "person",  # Peatones
+            1: "bicycle",  # Ciclistas
+            2: "car",
+            3: "motorcycle",
+            5: "bus",
+            7: "truck",
+        }
         # ✅ DESPUÉS cargar el modelo
         self._load_model()
 
@@ -31,7 +36,7 @@ class VehicleDetector:
             # YOLO descargará automáticamente el modelo si no existe
             self.model = YOLO(settings.yolo_model)
 
-            print(f"✅ Modelo cargado exitosamente")
+            print("✅ Modelo cargado exitosamente")
             print(f"📊 Clases de vehículos: {list(self.class_names.values())}")
 
         except Exception as e:
@@ -154,6 +159,8 @@ class VehicleDetector:
 
             # Color según tipo de vehículo
             colors = {
+                "bicycle": (0, 0, 0),
+                "person": (255, 255, 255),
                 "car": (0, 255, 0),  # Verde
                 "truck": (255, 0, 0),  # Azul
                 "bus": (0, 0, 255),  # Rojo
