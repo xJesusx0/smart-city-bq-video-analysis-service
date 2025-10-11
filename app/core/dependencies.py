@@ -1,17 +1,16 @@
 from app.models import CameraAndLocation
-from app.core.models.camera_api_key import CameraApiKeyBase
 from app.core.exceptions import get_credentials_exception
 from app.core.exceptions import get_forbidden_exception
 from typing import Optional
-from app.core.database.repositories.camera_api_key_repository_impl import (
+from app.core.database.mysql.repositories.camera_api_key_repository_impl import (
     CameraApiKeyRepositoryImpl,
 )
-from app.core.database.repositories.location_repository_impl import (
+from app.core.database.mysql.repositories.location_repository_impl import (
     LocationRepositoryImpl,
 )
 from app.core.repositories.camera_api_key_repository import CameraApiKeyRepository
 from app.core.repositories.location_repository import LocationRepository
-from app.core.database.connection import SessionDep
+from app.core.database.mysql.connection import SessionDep
 from app.core.security.auth_service import AuthService
 from typing import Annotated
 

@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     # Configuración de procesamiento
     max_image_size: int = 1280  # Redimensionar imágenes grandes
 
+    mongodb_url: str = "mongodb://admin:admin123@localhost:27017"
+    mongodb_database: str = "smart_traffic"
+    mongodb_collection: str = "traffic_metrics"
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
