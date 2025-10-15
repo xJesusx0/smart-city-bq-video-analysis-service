@@ -8,6 +8,7 @@ from app.core.config import settings
 from app.models import AnalysisResponse, HealthResponse, ErrorResponse
 from app.detector import VehicleDetector
 from app.core.dependencies import ValidKeyDep
+from app.core.database.mongo.mongo import mongodb
 
 # Crear la aplicación FastAPI
 app = FastAPI(
@@ -45,6 +46,13 @@ async def startup_event():
     except Exception as e:
         print(f"❌ Error al inicializar detector: {e}")
         print("⚠️  El servicio funcionará pero no podrá procesar imágenes")
+    # 🔌 Conectar a MongoDB
+    try:
+        print("🔌 Conectando a MongoDB...")
+        await mongodb.connect()
+        print("✅ Conectado a MongoDB")
+    except Exception as e:
+        print(f"⚠️  No se pudo conectar a MongoDB: {e}")
 
 
 @app.get("/", tags=["Root"])
@@ -111,8 +119,7 @@ async def analyze_image(
         detector.detect_and_annotate(file_path, annotated_path)
 
         processing_time = (datetime.now() - start_time).total_seconds()
-
-        return AnalysisResponse(
+        response = AnalysisResponse(
             success=True,
             location_id=camera_and_location.camera.location_id,
             image_path=str(file_path),
@@ -123,6 +130,13 @@ async def analyze_image(
             latitude=camera_and_location.location.latitude or 0.0,
             location_name=camera_and_location.location.name,
         )
+
+        # Guardar métrica en MongoDB
+        if mongodb:
+            await mongodb.save_metric(response)
+        else:
+            print("⚠️  MongoDB no está disponible, métrica no guardada")
+        return response
 
     except Exception as e:
         raise HTTPException(
