@@ -95,7 +95,8 @@ async def analyze_image(
 
     if detector is None:
         raise HTTPException(status_code=503, detail="Detector YOLO no está disponible")
-
+    if not file.filename or not file.content_type:
+        raise HTTPException(status_code=400, detail="El archivo no tiene nombre")
     # Validar tipo de archivo
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="El archivo debe ser una imagen")
