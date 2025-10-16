@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     mongodb_database: str = "smart_traffic"
     mongodb_collection: str = "traffic_metrics"
 
+    esp32_server_url: str = "http://localhost:9090"
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

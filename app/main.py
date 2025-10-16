@@ -1,3 +1,4 @@
+import traceback
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -9,6 +10,11 @@ from app.models import AnalysisResponse, HealthResponse, ErrorResponse
 from app.detector import VehicleDetector
 from app.core.dependencies import ValidKeyDep
 from app.core.database.mongo.mongo import mongodb
+from app.services.events.esp32_emission_service import (
+    ESP32EmissionService,
+    esp32_emission_service,
+)
+from app.services.events.event_emission_service import EventEmissionBody
 
 # Crear la aplicación FastAPI
 app = FastAPI(
@@ -132,6 +138,11 @@ async def analyze_image(
             location_name=camera_and_location.location.name,
         )
 
+        event_emission_body = ESP32EmissionService.process_analysis_response(response)
+        try:
+            await esp32_emission_service.emit_event(event_emission_body)
+        except Exception:
+            print(traceback.format_exc())
         # Guardar métrica en MongoDB
         if mongodb:
             await mongodb.save_metric(response)
