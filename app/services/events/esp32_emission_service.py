@@ -14,10 +14,10 @@ class ESP32EmissionService(EventEmissionService):
 
     async def emit_event(self, event: EventEmissionBody):
         response = await self.client.get(
-            f"{self.esp32_url}/events?v={event.vehicle_count}&p={event.pedestrian_count}",
+            f"{self.esp32_url}/set-status?v={event.vehicle_count}&p={event.pedestrian_count}",
         )
-        return response.json()
-
+        
+        print(response)
     @classmethod
     def process_analysis_response(cls, response: AnalysisResponse):
         detections = response.detections
